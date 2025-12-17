@@ -226,13 +226,12 @@ function App() {
             loading={loading}
           />
 
-          {(isRm || isHr) && (
+          {isRm && (
             <ReporteeActions
-              reportees={reportees}
+              reportees={rmReportees}
               currentUser={employeeNumber}
               onAction={handleRmAction}
               loading={loading}
-              isHr={isHr}
             />
           )}
 
