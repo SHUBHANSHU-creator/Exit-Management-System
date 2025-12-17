@@ -3,6 +3,7 @@ package com.example.EMS.serviceImpl;
 
 import com.example.EMS.dto.ResignationDetailsDTO;
 import com.example.EMS.dto.ResignedEmployeesDTO;
+import com.example.EMS.dto.ResponseDataBeanDTO;
 import com.example.EMS.entity.Employee;
 import com.example.EMS.entity.EmployeeResignationDetails;
 import com.example.EMS.repo.EmployeeDirectoryRepo;
@@ -56,7 +57,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                     }
                 }
 
-                return ResponseEntity.ok(resignedEmployeesList);
+                return ResponseEntity.ok(new ResponseDataBeanDTO(
+                        employeeResignationDetails,
+                        resignedEmployeesList
+                ));
 
             }else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
