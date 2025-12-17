@@ -6,6 +6,7 @@ import com.example.EMS.dto.ResignedEmployeesDTO;
 import com.example.EMS.dto.ResponseDataBeanDTO;
 import com.example.EMS.entity.Employee;
 import com.example.EMS.entity.EmployeeResignationDetails;
+import com.example.EMS.enums.ResignationStatus;
 import com.example.EMS.repo.EmployeeDirectoryRepo;
 import com.example.EMS.repo.EmployeeResignationDirectoryRepo;
 import com.example.EMS.service.EmployeeService;
@@ -48,6 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
                 //check for the RM first, if he is an RM then cannot be a HR
                 List<Employee> reporteeList = new ArrayList<>();
+                boolean isRM = false;
                 List<Employee> rmReporteeList = employeeDirectoryRepo.findByRmEmployeeNumber(existingUser.getEmployeeNumber());
                 if(rmReporteeList.isEmpty()){
                     List<Employee> hrReporteeList = employeeDirectoryRepo.findByHrEmployeeNumber(existingUser.getEmployeeNumber());
@@ -56,11 +58,17 @@ public class EmployeeServiceImpl implements EmployeeService {
                     }
                 }else{
                     reporteeList = rmReporteeList;
+                    isRM = true;
                 }
                 List<ResignedEmployeesDTO> resignedEmployeesList = new ArrayList<>();
+                ResignationStatus status = isRM
+                        ? ResignationStatus.SUBMITTTED
+                        : ResignationStatus.APPROVED_BY_RM;
                 for(Employee reportee: reporteeList){
                     if(reportee.getResignationId() != null){
-                        EmployeeResignationDetails reporteeResignationDetails =  employeeResignationDirectoryRepo.findByResignationId(reportee.getResignationId());
+                        EmployeeResignationDetails reporteeResignationDetails =
+                                employeeResignationDirectoryRepo
+                                        .findByResignationIdAndStatusEquals(reportee.getResignationId(), status);
                         if (reporteeResignationDetails != null){
                             ResignedEmployeesDTO resignedEmployeesDTO = new ResignedEmployeesDTO(reportee, reporteeResignationDetails);
                             resignedEmployeesList.add(resignedEmployeesDTO);
