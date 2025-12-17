@@ -93,7 +93,6 @@ public class ChecklistServiceImpl implements ChecklistService {
             if (itChecklist == null) {
                 itChecklist = new ItChecklist();
                 itChecklist.setConsolidatedChecklist(consolidatedChecklist);
-                itChecklist.setChecklistId(consolidatedChecklist.getChecklistId());
             }
             itChecklist.setSubmitted(request.getSubmitted());
             itChecklist.setDamaged(request.getDamaged());
@@ -111,7 +110,6 @@ public class ChecklistServiceImpl implements ChecklistService {
             if (loanChecklist == null) {
                 loanChecklist = new LoanChecklist();
                 loanChecklist.setConsolidatedChecklist(consolidatedChecklist);
-                loanChecklist.setChecklistId(consolidatedChecklist.getChecklistId());
             }
             loanChecklist.setLoanTaken(request.getLoanTaken());
             loanChecklist.setRepaid(request.getRepaid());
