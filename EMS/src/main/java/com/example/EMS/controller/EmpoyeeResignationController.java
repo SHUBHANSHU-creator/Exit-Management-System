@@ -5,6 +5,7 @@ import com.example.EMS.service.EmployeeResignationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,32 +16,29 @@ public class EmpoyeeResignationController {
     private final EmployeeResignationService employeeResignationService;
 
     @PostMapping("/employeeSubmission")
-    public ResponseEntity<?> employeeRequest(ResignationDetailsDTO resignationDetails) {
+    public ResponseEntity<?> employeeRequest(@RequestBody ResignationDetailsDTO resignationDetails) {
         log.info("Inside employeeRequest - {}", resignationDetails);
         if (resignationDetails.getEmployeeNumber() == null) {
             return ResponseEntity.badRequest().build();
         }
-        employeeResignationService.processEmployeeActions(resignationDetails);
-        return ResponseEntity.ok().build();
+        return employeeResignationService.processEmployeeActions(resignationDetails);
     }
 
     @PostMapping("/rmApproval")
-    public ResponseEntity<?> rmRequest(ResignationDetailsDTO resignationDetails) {
+    public ResponseEntity<?> rmRequest(@RequestBody ResignationDetailsDTO resignationDetails) {
         log.info("Inside employeeRequest - {}", resignationDetails);
         if (resignationDetails.getEmployeeNumber() == null) {
             return ResponseEntity.badRequest().build();
         }
-        employeeResignationService.processRmActions(resignationDetails);
-        return ResponseEntity.ok().build();
+        return employeeResignationService.processRmActions(resignationDetails);
     }
 
     @PostMapping("/hrApproval")
-    public ResponseEntity<?> hrRequest(ResignationDetailsDTO resignationDetails) {
+    public ResponseEntity<?> hrRequest(@RequestBody ResignationDetailsDTO resignationDetails) {
         log.info("Inside employeeRequest - {}", resignationDetails);
         if (resignationDetails.getEmployeeNumber() == null) {
             return ResponseEntity.badRequest().build();
         }
-        employeeResignationService.processHrActions(resignationDetails);
-        return ResponseEntity.ok().build();
+        return employeeResignationService.processHrActions(resignationDetails);
     }
 }
