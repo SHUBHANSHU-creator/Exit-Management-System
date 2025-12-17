@@ -25,7 +25,7 @@ function ResignationSection({ resignationDetails, onSubmit, onWithdraw, loading 
           <h2>Submit or manage your resignation</h2>
         </div>
         <div className="actions">
-          <button onClick={() => setShowModal(true)} disabled={loading}>
+          <button onClick={() => setShowModal(true)} disabled={loading || hasActiveResignation}>
             Submit resignation
           </button>
           {hasActiveResignation && (

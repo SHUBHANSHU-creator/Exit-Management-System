@@ -1,11 +1,11 @@
 import { RESIGNATION_STATUS } from '../constants/resignation';
 import '../styles/reportees.css';
 
-function ReporteeActions({ reportees, currentUser, onAction, loading, isHr }) {
+function ReporteeActions({ reportees, currentUser, onAction, loading }) {
   const uniqueReportees = dedupeReportees(reportees);
   const relevantReportees = uniqueReportees.filter((entry) => {
     const rmNumber = entry.employeeInfo?.rmEmployeeNumber || entry.employeeInfo?.RmEmployeeNumber;
-    return rmNumber === currentUser || isHr;
+    return rmNumber === currentUser;
   });
 
   if (!relevantReportees.length) {

@@ -43,55 +43,56 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
 
             EmployeeResignationDetails employeeResignationDetails = employee.getResignationId() != null
                     ? employeeResignationDirectoryRepo.findByResignationId(employee.getResignationId())
-                    : new EmployeeResignationDetails();
-            if (employeeResignationDetails == null) {
-                employeeResignationDetails = new EmployeeResignationDetails();
-            }
+                    : null;
 
-            switch (resignationDetails.getActionStatus()){
-                case SUBMITTTED -> {
-                    employeeResignationDetails.setResignationDate(new Date());
-                    employeeResignationDetails.setResignationReason(resignationDetails.getReason());
-                    employeeResignationDetails.setStatus(resignationDetails.getActionStatus());
-                    LocalDate lwdLocalDate = LocalDate.now().plusDays(30);
+            if (resignationDetails.getActionStatus() == ResignationStatus.SUBMITTTED) {
+                if (employeeResignationDetails != null && !employeeResignationDetails.isRetained()) {
+                    return ResponseEntity.badRequest().body("Employee already has an active resignation");
+                }
 
-                    Date lwdDate = Date.from(
-                            lwdLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                    );
-                    employeeResignationDetails.setLwd(lwdDate);
-                    employeeResignationDetails.setRetained(false);
-                }
-                case VOLUNTARY_WITHDRAWAL -> {
-                    employeeResignationDetails.setStatus(resignationDetails.getActionStatus());
-                    employeeResignationDetails.setRetained(true);
-                }
-                default -> {
-                    return ResponseEntity.badRequest().body("Invalid action for employee submission");
-                }
-            }
+                EmployeeResignationDetails newResignation = new EmployeeResignationDetails();
+                newResignation.setResignationDate(new Date());
+                newResignation.setResignationReason(resignationDetails.getReason());
+                newResignation.setStatus(resignationDetails.getActionStatus());
+                LocalDate lwdLocalDate = LocalDate.now().plusDays(30);
 
-            EmployeeResignationDetails savedRecord = employeeResignationDirectoryRepo.save(employeeResignationDetails);
-            if (employee.getResignationId() == null) {
+                Date lwdDate = Date.from(
+                        lwdLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                );
+                newResignation.setLwd(lwdDate);
+                newResignation.setRetained(false);
+
+                EmployeeResignationDetails savedRecord = employeeResignationDirectoryRepo.save(newResignation);
                 employee.setResignationId(savedRecord.getResignationId());
+                employeeDirectoryRepo.save(employee);
+
+                ConsolidatedChecklist consolidatedChecklist = consolidatedChecklistRepo.findByResignationId(savedRecord.getResignationId());
+                if (consolidatedChecklist == null) {
+                    consolidatedChecklist = new ConsolidatedChecklist();
+                    consolidatedChecklist.setResignationId(savedRecord.getResignationId());
+                    consolidatedChecklist.setItChecklistClosed(false);
+                    consolidatedChecklist.setLoanChecklistClosed(false);
+                }
+                consolidatedChecklist = consolidatedChecklistRepo.save(consolidatedChecklist);
+
+                ensureChecklistsInitialized(consolidatedChecklist);
+                return ResponseEntity.ok().body("Resignation details Submitted Successfully");
             }
-            employeeDirectoryRepo.save(employee);
 
-            ConsolidatedChecklist consolidatedChecklist = consolidatedChecklistRepo.findByResignationId(savedRecord.getResignationId());
-            if (consolidatedChecklist == null) {
-                consolidatedChecklist = new ConsolidatedChecklist();
-                consolidatedChecklist.setResignationId(savedRecord.getResignationId());
-                consolidatedChecklist.setItChecklistClosed(false);
-                consolidatedChecklist.setLoanChecklistClosed(false);
+            if (resignationDetails.getActionStatus() == ResignationStatus.VOLUNTARY_WITHDRAWAL) {
+                if (employeeResignationDetails == null) {
+                    return ResponseEntity.badRequest().body("No resignation found for employee");
+                }
+                employeeResignationDetails.setStatus(resignationDetails.getActionStatus());
+                employeeResignationDetails.setRetained(true);
+                employeeResignationDirectoryRepo.save(employeeResignationDetails);
+                return ResponseEntity.ok().body("Resignation withdrawn successfully");
             }
-            consolidatedChecklist = consolidatedChecklistRepo.save(consolidatedChecklist);
 
-            ensureChecklistsInitialized(consolidatedChecklist);
-
+            return ResponseEntity.badRequest().body("Invalid action for employee submission");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return ResponseEntity.ok().body("Resignation details Submitted Successfully");
-
     }
 
     @Override
