@@ -64,6 +64,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         }catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
-        return null;
     }
 }
