@@ -146,7 +146,8 @@ function App() {
         actionStatus
       });
       await refreshSession();
-      setAlertMessage('RM action submitted successfully');
+      const actorLabel = isHr ? 'HR' : 'RM';
+      setAlertMessage(`${actorLabel} action submitted successfully`);
     } catch (err) {
       setAlertMessage(err.message || 'Unable to update resignation');
     } finally {

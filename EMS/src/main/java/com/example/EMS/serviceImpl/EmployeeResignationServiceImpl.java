@@ -1,13 +1,17 @@
 package com.example.EMS.serviceImpl;
 
 import com.example.EMS.dto.ResignationDetailsDTO;
+import com.example.EMS.entity.ConsolidatedChecklist;
 import com.example.EMS.entity.Employee;
 import com.example.EMS.entity.EmployeeResignationDetails;
-import com.example.EMS.entity.ConsolidatedChecklist;
+import com.example.EMS.entity.ItChecklist;
+import com.example.EMS.entity.LoanChecklist;
 import com.example.EMS.enums.ResignationStatus;
 import com.example.EMS.repo.EmployeeDirectoryRepo;
 import com.example.EMS.repo.EmployeeResignationDirectoryRepo;
 import com.example.EMS.repo.ConsolidatedChecklistRepo;
+import com.example.EMS.repo.ItChecklistRepo;
+import com.example.EMS.repo.LoanChecklistRepo;
 import com.example.EMS.service.EmployeeResignationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,8 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
     private final EmployeeResignationDirectoryRepo  employeeResignationDirectoryRepo;
     private final EmployeeDirectoryRepo employeeDirectoryRepo;
     private final ConsolidatedChecklistRepo consolidatedChecklistRepo;
+    private final LoanChecklistRepo loanChecklistRepo;
+    private final ItChecklistRepo itChecklistRepo;
 
     @Override
     public ResponseEntity<?> processEmployeeActions(ResignationDetailsDTO resignationDetails) {
@@ -76,8 +82,10 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
                 consolidatedChecklist.setResignationId(savedRecord.getResignationId());
                 consolidatedChecklist.setItChecklistClosed(false);
                 consolidatedChecklist.setLoanChecklistClosed(false);
-                consolidatedChecklistRepo.save(consolidatedChecklist);
             }
+            consolidatedChecklist = consolidatedChecklistRepo.save(consolidatedChecklist);
+
+            ensureChecklistsInitialized(consolidatedChecklist);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -138,9 +146,8 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
                     }
                 }
                 employeeResignationDetails.setStatus(resignationDetails.getActionStatus());
-                if (resignationDetails.getActionStatus() == ResignationStatus.REVERSE_TERMINATION) {
-                    employeeResignationDetails.setRetained(true);
-                }
+                boolean retained = resignationDetails.getActionStatus() == ResignationStatus.REVERSE_TERMINATION;
+                employeeResignationDetails.setRetained(retained);
                 employeeResignationDirectoryRepo.save(employeeResignationDetails);
             } else {
                 return ResponseEntity.badRequest().body("Invalid action for HR");
@@ -150,4 +157,32 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
         }
         return ResponseEntity.ok().build();
     }
+
+    private void ensureChecklistsInitialized(ConsolidatedChecklist consolidatedChecklist) {
+        if (consolidatedChecklist == null || consolidatedChecklist.getChecklistId() == null) {
+            return;
+        }
+
+        ItChecklist existingItChecklist = itChecklistRepo.findByChecklistId(consolidatedChecklist.getChecklistId());
+        if (existingItChecklist == null) {
+            ItChecklist itChecklist = new ItChecklist();
+            itChecklist.setConsolidatedChecklist(consolidatedChecklist);
+            itChecklist.setChecklistId(consolidatedChecklist.getChecklistId());
+            itChecklist.setSubmitted(false);
+            itChecklist.setDamaged(false);
+            itChecklist.setPaid(false);
+            itChecklistRepo.save(itChecklist);
+        }
+
+        LoanChecklist existingLoanChecklist = loanChecklistRepo.findByChecklistId(consolidatedChecklist.getChecklistId());
+        if (existingLoanChecklist == null) {
+            LoanChecklist loanChecklist = new LoanChecklist();
+            loanChecklist.setConsolidatedChecklist(consolidatedChecklist);
+            loanChecklist.setChecklistId(consolidatedChecklist.getChecklistId());
+            loanChecklist.setLoanTaken(false);
+            loanChecklist.setRepaid(false);
+            loanChecklistRepo.save(loanChecklist);
+        }
+    }
+
 }
