@@ -5,7 +5,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/postgres?currentSchema=EMS
+    url: jdbc:postgresql://127.0.0.1:5432/postgres?currentSchema=ems
     username: shubhanshu
     password: password123
     driver-class-name: org.postgresql.Driver
@@ -16,8 +16,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: ems
         format_sql: true
     show-sql: true
+
+  sql:
+    init:
+      mode: always
 
 
 

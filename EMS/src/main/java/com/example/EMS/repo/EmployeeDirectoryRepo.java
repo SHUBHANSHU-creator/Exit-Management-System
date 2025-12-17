@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EmployeeDirectoryRepo extends JpaRepository<Employee, Integer> {
-    Employee existsByEmployeeNumber(Integer employeeNumber);
+    boolean existsByEmployeeNumber(Integer employeeNumber);
 
     Employee findByEmployeeNumber(Integer employeeNumber);
 
