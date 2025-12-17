@@ -56,12 +56,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                     }
                 }
 
+                return ResponseEntity.ok(resignedEmployeesList);
+
             }else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         }catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().build();
+        return null;
     }
 }
