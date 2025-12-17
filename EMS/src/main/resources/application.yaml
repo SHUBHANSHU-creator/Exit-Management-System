@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: EMS
+  profiles:
+    active: dev

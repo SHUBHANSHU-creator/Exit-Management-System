@@ -1,0 +1,27 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /ems
+
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/postgres?currentSchema=EMS
+    username: shubhanshu
+    password: password123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
