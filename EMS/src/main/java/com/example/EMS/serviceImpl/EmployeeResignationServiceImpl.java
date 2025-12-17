@@ -167,7 +167,6 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
         if (existingItChecklist == null) {
             ItChecklist itChecklist = new ItChecklist();
             itChecklist.setConsolidatedChecklist(consolidatedChecklist);
-            itChecklist.setChecklistId(consolidatedChecklist.getChecklistId());
             itChecklist.setSubmitted(false);
             itChecklist.setDamaged(false);
             itChecklist.setPaid(false);
@@ -178,7 +177,6 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
         if (existingLoanChecklist == null) {
             LoanChecklist loanChecklist = new LoanChecklist();
             loanChecklist.setConsolidatedChecklist(consolidatedChecklist);
-            loanChecklist.setChecklistId(consolidatedChecklist.getChecklistId());
             loanChecklist.setLoanTaken(false);
             loanChecklist.setRepaid(false);
             loanChecklistRepo.save(loanChecklist);
