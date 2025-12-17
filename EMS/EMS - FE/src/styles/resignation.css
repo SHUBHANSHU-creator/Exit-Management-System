@@ -1,0 +1,15 @@
+.resignation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.resignation-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.resignation-grid h3 {
+  margin-bottom: 0.2rem;
+}

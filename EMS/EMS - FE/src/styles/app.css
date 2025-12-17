@@ -1,0 +1,22 @@
+.app-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.alert {
+  margin-bottom: 0.5rem;
+}
