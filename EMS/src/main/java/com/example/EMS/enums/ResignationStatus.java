@@ -5,6 +5,7 @@ public enum ResignationStatus {
     VOLUNTARY_WITHDRAWAL,
     APPROVED_BY_RM,
     APPROVED_BY_HR,
+    SCHEDULED_MEETING,
     REVERSE_TERMINATION,
 
 }
