@@ -45,7 +45,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             Employee existingUser = employeeDirectoryRepo.existsByEmployeeNumber(employee.getEmployeeNumber());
             if(existingUser != null){
                 EmployeeResignationDetails employeeResignationDetails = employeeResignationDirectoryRepo.findByResignationId(existingUser.getResignationId());
-                List<Employee> reporteeList = employeeDirectoryRepo.findByRmEmployeeNumber(existingUser.getEmployeeNumber());
+
+                //check for the RM first, if he is an RM then cannot be a HR
+                List<Employee> reporteeList = new ArrayList<>();
+                List<Employee> rmReporteeList = employeeDirectoryRepo.findByRmEmployeeNumber(existingUser.getEmployeeNumber());
+                if(rmReporteeList.isEmpty()){
+                    List<Employee> hrReporteeList = employeeDirectoryRepo.findByHrEmployeeNumber(existingUser.getEmployeeNumber());
+                    if(!hrReporteeList.isEmpty()){
+                        reporteeList =  hrReporteeList;
+                    }
+                }else{
+                    reporteeList = rmReporteeList;
+                }
                 List<ResignedEmployeesDTO> resignedEmployeesList = new ArrayList<>();
                 for(Employee reportee: reporteeList){
                     if(reportee.getResignationId() != null){

@@ -13,4 +13,6 @@ public interface EmployeeDirectoryRepo extends JpaRepository<Employee, Integer> 
     Employee findByEmployeeNumber(Integer employeeNumber);
 
     List<Employee> findByRmEmployeeNumber(Integer employeeNumber);
+
+    List<Employee> findByHrEmployeeNumber(Integer employeeNumber);
 }
