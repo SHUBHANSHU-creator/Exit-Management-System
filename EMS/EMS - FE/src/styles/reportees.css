@@ -1,0 +1,48 @@
+.reportee-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.reportee-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.reportee-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reportee-card .muted {
+  margin: 0.1rem 0;
+}
+
+.status-text {
+  font-weight: 700;
+  color: var(--brand-strong);
+}
+
+.reportee-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 180px;
+}
+
+@media (max-width: 800px) {
+  .reportee-card {
+    flex-direction: column;
+  }
+
+  .reportee-actions {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
