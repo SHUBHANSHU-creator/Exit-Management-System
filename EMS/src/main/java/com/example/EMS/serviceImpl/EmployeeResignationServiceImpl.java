@@ -3,9 +3,11 @@ package com.example.EMS.serviceImpl;
 import com.example.EMS.dto.ResignationDetailsDTO;
 import com.example.EMS.entity.Employee;
 import com.example.EMS.entity.EmployeeResignationDetails;
+import com.example.EMS.entity.ConsolidatedChecklist;
 import com.example.EMS.enums.ResignationStatus;
 import com.example.EMS.repo.EmployeeDirectoryRepo;
 import com.example.EMS.repo.EmployeeResignationDirectoryRepo;
+import com.example.EMS.repo.ConsolidatedChecklistRepo;
 import com.example.EMS.service.EmployeeResignationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.util.Date;
 public class EmployeeResignationServiceImpl implements EmployeeResignationService {
     private final EmployeeResignationDirectoryRepo  employeeResignationDirectoryRepo;
     private final EmployeeDirectoryRepo employeeDirectoryRepo;
+    private final ConsolidatedChecklistRepo consolidatedChecklistRepo;
 
     @Override
     public ResponseEntity<?> processEmployeeActions(ResignationDetailsDTO resignationDetails) {
@@ -66,6 +69,15 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
                 employee.setResignationId(savedRecord.getResignationId());
             }
             employeeDirectoryRepo.save(employee);
+
+            ConsolidatedChecklist consolidatedChecklist = consolidatedChecklistRepo.findByResignationId(savedRecord.getResignationId());
+            if (consolidatedChecklist == null) {
+                consolidatedChecklist = new ConsolidatedChecklist();
+                consolidatedChecklist.setResignationId(savedRecord.getResignationId());
+                consolidatedChecklist.setItChecklistClosed(false);
+                consolidatedChecklist.setLoanChecklistClosed(false);
+                consolidatedChecklistRepo.save(consolidatedChecklist);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -119,6 +131,12 @@ public class EmployeeResignationServiceImpl implements EmployeeResignationServic
 
             if (resignationDetails.getActionStatus() == ResignationStatus.APPROVED_BY_HR
                     || resignationDetails.getActionStatus() == ResignationStatus.REVERSE_TERMINATION) {
+                if (resignationDetails.getActionStatus() == ResignationStatus.APPROVED_BY_HR) {
+                    ConsolidatedChecklist consolidatedChecklist = consolidatedChecklistRepo.findByResignationId(employeeResignationDetails.getResignationId());
+                    if (consolidatedChecklist == null || !consolidatedChecklist.isItChecklistClosed() || !consolidatedChecklist.isLoanChecklistClosed()) {
+                        return ResponseEntity.badRequest().body("All checklists must be closed before HR approval");
+                    }
+                }
                 employeeResignationDetails.setStatus(resignationDetails.getActionStatus());
                 if (resignationDetails.getActionStatus() == ResignationStatus.REVERSE_TERMINATION) {
                     employeeResignationDetails.setRetained(true);
