@@ -14,7 +14,7 @@ A full-stack Exit Management System for handling employee resignations with mana
 ## Prerequisites
 
 - Java 21 and Maven for the backend.
-- Node.js 18+ and npm for the frontend.
+- React for the frontend.
 - PostgreSQL database for the backend (connection configured via environment variables).
 
 ## Backend (Spring Boot)
