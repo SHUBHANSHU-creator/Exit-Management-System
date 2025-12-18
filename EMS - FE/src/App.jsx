@@ -98,6 +98,15 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    setEmployeeNumber(null);
+    setResignationDetails(null);
+    setReportees([]);
+    setPendingIt([]);
+    setPendingLoan([]);
+    setAlertMessage('');
+  };
+
   const handleSubmitResignation = async (reason) => {
     if (!employeeNumber) return;
     setLoading(true);
@@ -210,7 +219,14 @@ function App() {
           <h1>Exit Management System</h1>
           <p>Employee self-service with RM and HR workflows</p>
         </div>
-        {isLoggedIn && <span className="badge">Logged in as #{employeeNumber}</span>}
+        {isLoggedIn && (
+          <div className="header-actions">
+            <span className="badge">Logged in as #{employeeNumber}</span>
+            <button className="ghost" onClick={handleLogout}>
+              Log out
+            </button>
+          </div>
+        )}
       </header>
 
       {!isLoggedIn ? (

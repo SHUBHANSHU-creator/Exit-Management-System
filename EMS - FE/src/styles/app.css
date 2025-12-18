@@ -11,6 +11,12 @@
   margin-bottom: 1.5rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;
